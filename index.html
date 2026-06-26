@@ -2,19 +2,148 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#0F1923" />
+
+    <!-- PWA Meta -->
+    <meta name="theme-color" content="#3ECFB2" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="NutriTrack" />
+    <meta name="application-name" content="Nutrition Tracker" />
+    <meta name="msapplication-TileColor" content="#0F1923" />
+
+    <!-- SEO -->
+    <meta name="description" content="Suivi nutritionnel et dépense énergétique avec analyse IA" />
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/nutrition-tracker/manifest.json" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/nutrition-tracker/favicon.svg" />
+
+    <!-- Apple touch icons -->
+    <link rel="apple-touch-icon" href="/nutrition-tracker/icons/icon-192.svg" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/nutrition-tracker/icons/icon-192.svg" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/nutrition-tracker/icons/icon-512.svg" />
+
+    <!-- Apple splash screens (optional but improves iOS experience) -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
     <title>Nutrition Tracker</title>
+
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { background: #0F1923; }
+      html, body { height: 100%; }
+      body {
+        background: #0F1923;
+        /* Prevent overscroll bounce on iOS */
+        overscroll-behavior: none;
+      }
+      #root { min-height: 100%; }
+
+      /* PWA install prompt */
+      #pwa-install-banner {
+        display: none;
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1E3048;
+        border: 1px solid #3ECFB2;
+        border-radius: 14px;
+        padding: 14px 20px;
+        color: #E8F4F8;
+        font-family: system-ui, sans-serif;
+        font-size: 13px;
+        z-index: 9999;
+        max-width: 340px;
+        width: calc(100% - 32px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        align-items: center;
+        gap: 12px;
+      }
+      #pwa-install-banner.visible { display: flex; }
+      #pwa-install-btn {
+        background: #3ECFB2;
+        color: #0F1923;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      #pwa-dismiss-btn {
+        background: none;
+        border: none;
+        color: #7A9BB5;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 0;
+        line-height: 1;
+      }
     </style>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- PWA install banner -->
+    <div id="pwa-install-banner">
+      <span>📲</span>
+      <span style="flex:1">Installer l'app sur votre écran d'accueil</span>
+      <button id="pwa-install-btn">Installer</button>
+      <button id="pwa-dismiss-btn">×</button>
+    </div>
+
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Service Worker registration + PWA install prompt -->
+    <script>
+      // Register Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/nutrition-tracker/sw.js', { scope: '/nutrition-tracker/' })
+            .then((reg) => console.log('[SW] Registered, scope:', reg.scope))
+            .catch((err) => console.warn('[SW] Registration failed:', err));
+        });
+      }
+
+      // PWA install prompt (Android Chrome)
+      let deferredPrompt = null;
+      const banner  = document.getElementById('pwa-install-banner');
+      const installBtn = document.getElementById('pwa-install-btn');
+      const dismissBtn = document.getElementById('pwa-dismiss-btn');
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Show banner after 3 seconds
+        setTimeout(() => banner.classList.add('visible'), 3000);
+      });
+
+      installBtn.addEventListener('click', async () => {
+        banner.classList.remove('visible');
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log('[PWA] Install outcome:', outcome);
+          deferredPrompt = null;
+        }
+      });
+
+      dismissBtn.addEventListener('click', () => {
+        banner.classList.remove('visible');
+        deferredPrompt = null;
+      });
+
+      window.addEventListener('appinstalled', () => {
+        console.log('[PWA] App installed successfully');
+        banner.classList.remove('visible');
+        deferredPrompt = null;
+      });
+    </script>
   </body>
 </html>

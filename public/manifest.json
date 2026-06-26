@@ -1,0 +1,47 @@
+{
+  "name": "Nutrition Tracker",
+  "short_name": "NutriTrack",
+  "description": "Suivi nutritionnel et dépense énergétique avec analyse IA",
+  "start_url": "/nutrition-tracker/",
+  "scope": "/nutrition-tracker/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F1923",
+  "theme_color": "#3ECFB2",
+  "lang": "fr",
+  "categories": ["health", "fitness"],
+  "icons": [
+    {
+      "src": "/nutrition-tracker/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/nutrition-tracker/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/nutrition-tracker/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/nutrition-tracker/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ajouter un repas",
+      "short_name": "Repas",
+      "url": "/nutrition-tracker/",
+      "icons": [{ "src": "/nutrition-tracker/icons/icon-96.svg", "sizes": "96x96", "type": "image/svg+xml" }]
+    }
+  ]
+}
